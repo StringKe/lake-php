@@ -1,0 +1,54 @@
+# phpize, configure and make output; `phpize --clean` removes all of it
+/.deps
+/.libs/
+/Makefile
+/Makefile.fragments
+/Makefile.objects
+/acinclude.m4
+/aclocal.m4
+/autom4te.cache/
+/build/
+/config.cache
+/config.guess
+/config.h
+/config.h.in
+/config.h.in~
+/config.log
+/config.nice
+/config.status
+/config.sub
+/configure
+/configure~
+/configure.ac
+/install-sh
+/libtool
+/ltmain.sh
+/missing
+/mkinstalldirs
+/modules/
+/run-tests.php
+/tmp-php.ini
+*.la
+*.lo
+*.o
+*.dep
+
+# run-tests output
+/tests/*.diff
+/tests/*.exp
+/tests/*.log
+/tests/*.mem
+/tests/*.out
+/tests/*.php
+/tests/*.sh
+
+# cargo output
+/ffi/target/
+
+# release tarballs produced by `pecl package`
+/pdo_lake-*.tgz
+/package.xml.orig
+
+.DS_Store
+.idea/
+.vscode/

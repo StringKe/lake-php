@@ -1,0 +1,38 @@
+{
+  "name": "stringke/lake-php",
+  "description": "Native PDO driver for TiDB Cloud Lake and Databend, built on the official Rust driver",
+  "type": "php-ext",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pdo",
+    "databend",
+    "tidb",
+    "lake",
+    "warehouse",
+    "extension"
+  ],
+  "homepage": "https://github.com/stringke/lake-php",
+  "support": {
+    "issues": "https://github.com/stringke/lake-php/issues",
+    "source": "https://github.com/stringke/lake-php"
+  },
+  "require": {
+    "php": ">=8.4",
+    "ext-pdo": "*",
+    "ext-json": "*"
+  },
+  "php-ext": {
+    "extension-name": "pdo_lake",
+    "priority": 30,
+    "os-families-exclude": [
+      "windows"
+    ],
+    "configure-options": [
+      {
+        "name": "with-lake-ffi",
+        "needs-value": true,
+        "description": "Directory containing a prebuilt liblake_ffi.a instead of building it with cargo"
+      }
+    ]
+  }
+}

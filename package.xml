@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.10.13" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0"
+    xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd
+                        http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+    <name>pdo_lake</name>
+    <channel>pecl.php.net</channel>
+    <summary>PDO driver for TiDB Cloud Lake and Databend</summary>
+    <description>Native PDO driver for TiDB Cloud Lake and Databend. It links the official Rust driver (lake-driver) through a C ABI and supports the REST API and FlightSQL transports, prepared statements, streaming results, transactions, sessions, stages and bulk loading. Building requires Rust 1.88 or newer (cargo on PATH), or a prebuilt liblake_ffi.a passed with --with-lake-ffi.</description>
+    <lead>
+        <name>StringKe</name>
+        <user>stringke</user>
+        <email>stringke@users.noreply.github.com</email>
+        <active>yes</active>
+    </lead>
+    <date>2026-09-28</date>
+    <version>
+        <release>0.1.0</release>
+        <api>0.1.0</api>
+    </version>
+    <stability>
+        <release>beta</release>
+        <api>beta</api>
+    </stability>
+    <license uri="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</license>
+    <notes>First release. See CHANGELOG.md.</notes>
+    <contents>
+        <dir name="/">
+            <file name="CHANGELOG.md" role="doc" />
+            <file name="LICENSE" role="doc" />
+            <file name="README.md" role="doc" />
+            <file name="config.m4" role="src" />
+            <file name="Makefile.frag" role="src" />
+            <dir name="docs">
+                <file name="building.md" role="doc" />
+                <file name="development.md" role="doc" />
+                <file name="usage.md" role="doc" />
+            </dir>
+            <dir name="ffi">
+                <file name="Cargo.lock" role="src" />
+                <file name="Cargo.toml" role="src" />
+                <file name="rustfmt.toml" role="src" />
+                <dir name="src">
+                    <file name="abi.rs" role="src" />
+                    <file name="cell.rs" role="src" />
+                    <file name="conn.rs" role="src" />
+                    <file name="dsn.rs" role="src" />
+                    <file name="error.rs" role="src" />
+                    <file name="lib.rs" role="src" />
+                    <file name="result.rs" role="src" />
+                </dir>
+            </dir>
+            <dir name="src">
+                <file name="lake_driver.c" role="src" />
+                <file name="lake_ffi.h" role="src" />
+                <file name="lake_statement.c" role="src" />
+                <file name="pdo_lake.c" role="src" />
+                <file name="pdo_lake.stub.php" role="src" />
+                <file name="pdo_lake_arginfo.h" role="src" />
+                <file name="php_pdo_lake.h" role="src" />
+                <file name="php_pdo_lake_int.h" role="src" />
+            </dir>
+            <dir name="tests">
+                <file name="001_driver.phpt" role="test" />
+                <file name="002_connect_errors.phpt" role="test" />
+                <file name="003_binding.phpt" role="test" />
+                <file name="004_types.phpt" role="test" />
+                <file name="005_fetch_modes.phpt" role="test" />
+                <file name="006_streaming.phpt" role="test" />
+                <file name="007_row_count.phpt" role="test" />
+                <file name="008_transactions.phpt" role="test" />
+                <file name="009_session.phpt" role="test" />
+                <file name="010_stage_load.phpt" role="test" />
+                <file name="011_error_modes.phpt" role="test" />
+                <file name="012_flight.phpt" role="test" />
+                <file name="013_memory.phpt" role="test" />
+                <file name="014_persistent.phpt" role="test" />
+                <file name="015_server_params.phpt" role="test" />
+                <file name="016_presign_get.phpt" role="test" />
+                <file name="config.inc" role="test" />
+                <file name="skipif.inc" role="test" />
+            </dir>
+        </dir>
+    </contents>
+    <dependencies>
+        <required>
+            <php>
+                <min>8.4.0</min>
+            </php>
+            <pearinstaller>
+                <min>1.10.0</min>
+            </pearinstaller>
+            <extension>
+                <name>pdo</name>
+            </extension>
+            <extension>
+                <name>json</name>
+            </extension>
+        </required>
+    </dependencies>
+    <providesextension>pdo_lake</providesextension>
+    <extsrcrelease>
+        <configureoption name="with-lake-ffi" default="no"
+            prompt="Directory with a prebuilt liblake_ffi.a (no to build it with cargo)" />
+    </extsrcrelease>
+    <changelog>
+        <release>
+            <date>2026-09-28</date>
+            <version>
+                <release>0.1.0</release>
+                <api>0.1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license uri="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</license>
+            <notes>First release.</notes>
+        </release>
+    </changelog>
+</package>

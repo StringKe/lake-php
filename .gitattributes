@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+src/pdo_lake_arginfo.h linguist-generated=true
+Cargo.lock linguist-generated=true
+
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.editorconfig export-ignore
+/compose.yaml export-ignore
