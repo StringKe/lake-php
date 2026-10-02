@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-10-02
+
+### Fixed
+
+- Panics inside the driver, including those on its runtime threads, are no longer silenced: each one is written to stderr as a single `pdo_lake panic:` line with the thread name, source location and message, so php-fpm with `catch_workers_output` records it in its log. Panics on PHP calls are still reported as PDO errors.
+
 ## [0.1.0] - 2026-09-28
 
 First release.
@@ -16,4 +22,5 @@ First release.
 - SQLSTATE mapping for common server error codes, persistent connections.
 - PECL `package.xml` and PIE `composer.json`.
 
+[0.1.1]: https://github.com/stringke/lake-php/releases/tag/v0.1.1
 [0.1.0]: https://github.com/stringke/lake-php/releases/tag/v0.1.0
