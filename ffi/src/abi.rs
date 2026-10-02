@@ -2,7 +2,9 @@
 //! which Rust guarantees to be laid out as nullable C pointers, so they need no `unsafe` to use.
 //! Only borrowed byte ranges (`LakeStr`, parameter and cell arrays) and the release of `LakeOwned` remain `unsafe`.
 
+use std::any::Any;
 use std::ffi::c_char;
+use std::io::Write;
 use std::panic::{self, AssertUnwindSafe};
 use std::sync::{Mutex, Once};
 
@@ -116,10 +118,28 @@ fn set_error(error: Option<&mut LakeError>, failure: Failure) {
     error.message = LakeOwned::from_string(failure.message);
 }
 
+/// Replaces the default hook, whose multi-line output and backtrace hint do not fit a php-fpm log, with one line on
+/// stderr. It also covers panics on runtime threads, which never pass through `guard`.
+fn install_panic_hook() {
+    static HOOK: Once = Once::new();
+    HOOK.call_once(|| panic::set_hook(Box::new(log_panic)));
+}
+
+fn log_panic(info: &panic::PanicHookInfo<'_>) {
+    let thread = std::thread::current();
+    let location = info.location().map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column())).unwrap_or_else(|| "unknown location".to_string());
+    let line = format!("pdo_lake panic: thread '{}' at {location}: {}\n", thread.name().unwrap_or("<unnamed>"), panic_detail(info.payload()).replace('\n', "\\n"));
+    // A failing write must not panic again inside the hook, which would abort the process.
+    let _ = std::io::stderr().lock().write_all(line.as_bytes());
+}
+
+fn panic_detail(payload: &(dyn Any + Send)) -> String {
+    payload.downcast_ref::<&str>().map(|s| s.to_string()).or_else(|| payload.downcast_ref::<String>().cloned()).unwrap_or_default()
+}
+
 /// Runs `body`, turning both errors and panics into a filled `LakeError` and the `fallback` value.
 pub fn guard<T>(error: Option<&mut LakeError>, fallback: T, body: impl FnOnce() -> Result<T, Failure>) -> T {
-    static QUIET_PANICS: Once = Once::new();
-    QUIET_PANICS.call_once(|| panic::set_hook(Box::new(|_| {})));
+    install_panic_hook();
     match panic::catch_unwind(AssertUnwindSafe(body)) {
         Ok(Ok(value)) => value,
         Ok(Err(failure)) => {
@@ -127,15 +147,15 @@ pub fn guard<T>(error: Option<&mut LakeError>, fallback: T, body: impl FnOnce() 
             fallback
         }
         Err(payload) => {
-            let detail = payload.downcast_ref::<&str>().map(|s| s.to_string()).or_else(|| payload.downcast_ref::<String>().cloned()).unwrap_or_default();
-            set_error(error, Failure::new(GENERAL, format!("pdo_lake internal error: {detail}")));
+            set_error(error, Failure::new(GENERAL, format!("pdo_lake internal error: {}", panic_detail(payload.as_ref()))));
             fallback
         }
     }
 }
 
-/// Runs a release path, swallowing panics so they never unwind into C.
+/// Runs a release path, catching panics so they never unwind into C; the hook still logs them.
 pub fn quietly(body: impl FnOnce()) {
+    install_panic_hook();
     let _ = panic::catch_unwind(AssertUnwindSafe(body));
 }
 
@@ -156,4 +176,20 @@ pub fn runtime() -> &'static Runtime {
     let runtime: &'static Runtime = Box::leak(Box::new(runtime));
     *slot = Some((pid, runtime));
     runtime
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn guard_turns_a_formatted_panic_into_an_error() {
+        let mut error = LakeError { sqlstate: [0; 6], code: 0, message: LakeOwned::empty() };
+        let value = guard(Some(&mut error), -1, || -> Result<i32, Failure> { panic!("broken row {}", 7) });
+        assert_eq!(value, -1);
+        // SAFETY: `guard` filled `message` through `LakeOwned::from_string`.
+        let message = unsafe { std::str::from_utf8(std::slice::from_raw_parts(error.message.ptr, error.message.len)) }.unwrap();
+        assert_eq!(message, "pdo_lake internal error: broken row 7");
+        lake_error_clear(Some(&mut error));
+    }
 }
