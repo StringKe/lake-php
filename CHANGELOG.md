@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-23
+
+### Fixed
+
+- On Linux the module is linked with `-z nodelete`, so it stays mapped after PHP unloads it at shutdown. Thread-local destructors registered by the Rust side (tokio, rand) run after that point and would otherwise jump into unmapped code; the same pattern made processes that had connected exit with a segmentation fault in `pdo_tidb` built with Rust 1.98.
+
 ## [0.1.1] - 2026-10-02
 
 ### Fixed
@@ -22,5 +28,6 @@ First release.
 - SQLSTATE mapping for common server error codes, persistent connections.
 - PECL `package.xml` and PIE `composer.json`.
 
+[0.1.2]: https://github.com/stringke/lake-php/releases/tag/v0.1.2
 [0.1.1]: https://github.com/stringke/lake-php/releases/tag/v0.1.1
 [0.1.0]: https://github.com/stringke/lake-php/releases/tag/v0.1.0

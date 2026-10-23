@@ -37,13 +37,13 @@ rustup-init -y
 Install straight from a release tarball:
 
 ```sh
-pecl install https://github.com/stringke/lake-php/releases/download/v0.1.1/pdo_lake-0.1.1.tgz
+pecl install https://github.com/stringke/lake-php/releases/download/v0.1.2/pdo_lake-0.1.2.tgz
 ```
 
 or from a tarball you built yourself (see [development.md](development.md#packaging)):
 
 ```sh
-pecl install ./pdo_lake-0.1.1.tgz
+pecl install ./pdo_lake-0.1.2.tgz
 ```
 
 PECL asks for the `with-lake-ffi` directory; press Enter to keep `no` and build the Rust part with cargo. When PECL runs through `sudo`, the root environment usually has no `cargo`; either keep Rust on root's `PATH` (`sudo env "PATH=$PATH" pecl install ...`) or build as your user with option 3 and install with `sudo make install`.
