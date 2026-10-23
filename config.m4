@@ -26,7 +26,9 @@ if test "$PHP_PDO_LAKE" != "no"; then
       LAKE_FFI_SYSTEM_LIBS="-framework CoreFoundation -framework Security -framework SystemConfiguration -liconv -lresolv"
       ;;
     *)
-      LAKE_FFI_SYSTEM_LIBS="-lpthread -ldl -lm -lrt"
+      dnl -z nodelete keeps the module mapped after PHP's dlclose: thread-local destructors registered by
+      dnl the Rust side (tokio, rand) run later, at thread or process exit, and would jump into unmapped code.
+      LAKE_FFI_SYSTEM_LIBS="-lpthread -ldl -lm -lrt -Wl,-z,nodelete"
       ;;
   esac
 
