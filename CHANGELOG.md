@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.1.3] - 2026-11-02
 
 ### Fixed
 
@@ -34,6 +34,7 @@ First release.
 - SQLSTATE mapping for common server error codes, persistent connections.
 - PECL `package.xml` and PIE `composer.json`.
 
+[0.1.3]: https://github.com/stringke/lake-php/releases/tag/v0.1.3
 [0.1.2]: https://github.com/stringke/lake-php/releases/tag/v0.1.2
 [0.1.1]: https://github.com/stringke/lake-php/releases/tag/v0.1.1
 [0.1.0]: https://github.com/stringke/lake-php/releases/tag/v0.1.0
