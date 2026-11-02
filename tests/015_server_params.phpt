@@ -31,6 +31,21 @@ $st = $db->prepare('SELECT ?, ? FROM numbers(3) WHERE number > ?');
 $st->execute(['x', true, 0]);
 echo json_encode($st->fetchAll(PDO::FETCH_NUM)), "\n";
 
+$st = $db->prepare('SELECT CASE WHEN number = ? THEN ? WHEN number = ? THEN ? ELSE ? END FROM numbers(3) ORDER BY number');
+foreach ([0, 'a', 1, 'b', 'c'] as $i => $value) {
+    $st->bindValue($i + 1, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+}
+$st->execute();
+echo json_encode($st->fetchAll(PDO::FETCH_COLUMN)), "\n";
+
+$st = $db->prepare('SELECT CASE WHEN number = :zero THEN :a WHEN number = :one THEN :b ELSE :a END FROM numbers(3) ORDER BY number');
+$st->bindValue('zero', 0, PDO::PARAM_INT);
+$st->bindValue('one', 1, PDO::PARAM_INT);
+$st->bindValue('a', 'a');
+$st->bindValue('b', 'b');
+$st->execute();
+echo json_encode($st->fetchAll(PDO::FETCH_COLUMN)), "\n";
+
 $db->exec('CREATE OR REPLACE TABLE t_native (id INT, raw BINARY NULL)');
 $ins = $db->prepare('INSERT INTO t_native VALUES (?, ?)');
 $ins->bindValue(1, 1, PDO::PARAM_INT);
@@ -56,6 +71,8 @@ bool(true)
 NULL
 float(0.75)
 [["x","1"],["x","1"]]
+["a","b","c"]
+["a","b","a"]
 int(1)
 string(6) "0027ff"
 int(1)

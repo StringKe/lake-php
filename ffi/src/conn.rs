@@ -38,15 +38,17 @@ fn live(conn: Option<&LakeConn>) -> Result<&Connection, Failure> {
     conn.map(|c| &c.conn).ok_or_else(|| Failure::new(GENERAL, "connection is closed"))
 }
 
+/// Parameter n (from 1) is sent as the named hole `lake_p<n>` (`LAKE_PARAM_HOLE_TEMPLATE` in `lake_ffi.h`): Databend numbers `?` in syntax-tree order, not text order.
+///
 /// # Safety
 /// Every string parameter must point to `len` readable bytes.
 unsafe fn json_params(params: &[LakeParam]) -> Result<Option<serde_json::Value>, Failure> {
     if params.is_empty() {
         return Ok(None);
     }
-    let mut values = Vec::with_capacity(params.len());
+    let mut values = serde_json::Map::with_capacity(params.len());
     for (index, p) in params.iter().enumerate() {
-        values.push(match p.kind {
+        let value = match p.kind {
             PARAM_NULL => serde_json::Value::Null,
             PARAM_BOOL => serde_json::Value::Bool(p.int != 0),
             PARAM_INT => serde_json::Value::from(p.int),
@@ -55,9 +57,10 @@ unsafe fn json_params(params: &[LakeParam]) -> Result<Option<serde_json::Value>,
                 serde_json::Value::String(unsafe { raw.text("parameter") }?.unwrap_or_default().to_owned())
             }
             other => return Err(Failure::new(INVALID_PARAM, format!("parameter {} has unknown kind {other}", index + 1))),
-        });
+        };
+        values.insert(format!("lake_p{}", index + 1), value);
     }
-    Ok(Some(serde_json::Value::Array(values)))
+    Ok(Some(serde_json::Value::Object(values)))
 }
 
 fn load_method(method: i32) -> LoadMethod {

@@ -102,7 +102,7 @@ The accepted schemes are `lake`, `lake+http`, `lake+https`, `lake+flight`, `lake
 ## Parameter binding
 
 - `?` and `:name` placeholders are both supported, but not mixed in one statement (PDO raises `HY093`). A name may appear several times.
-- With server-side parameters (Databend 1.2.900 and newer, and `PDO::ATTR_EMULATE_PREPARES` set to `false`) values travel separately from the SQL. Otherwise the driver substitutes quoted literals on the client. Both paths give the same results.
+- With server-side parameters (Databend 1.2.900 and newer, and `PDO::ATTR_EMULATE_PREPARES` set to `false`) values travel separately from the SQL. The driver sends every placeholder as a named hole numbered in text order (`:lake_p1`, `:lake_p2`, ...), because Databend numbers bare `?` in syntax-tree order (a `CASE` takes all `WHEN` values before any `THEN` value). Otherwise the driver substitutes quoted literals on the client. Both paths give the same results.
 - `execute([...])` binds every value as a string, as in all PDO drivers; use `bindValue()` with `PARAM_INT`, `PARAM_BOOL` or `PARAM_NULL` for typed values.
 - `PARAM_LOB` values are sent as `FROM_HEX('...')`, so arbitrary bytes round-trip unchanged. A statement with a LOB parameter always uses client-side substitution.
 - A statement executed without bound parameters is sent exactly as written, so map literals such as `{'k':1}` are not taken for `:name` placeholders. When a statement does bind parameters, write such literals with a space after the colon (`{'k': 1}`).

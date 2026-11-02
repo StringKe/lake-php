@@ -55,6 +55,36 @@ static void lake_handle_closer(pdo_dbh_t *dbh)
 	dbh->driver_data = NULL;
 }
 
+/*
+ * Databend numbers `?` in syntax-tree order, so a CASE takes every WHEN value before any THEN value.
+ * The `?` left after PDO's rewrite are renamed to holes numbered in text order, which the server looks up by name.
+ */
+static int lake_number_placeholders(pdo_stmt_t *stmt, pdo_lake_stmt *S, zend_string *sql)
+{
+	HashTable *names = stmt->bound_param_map;
+	const char *template = stmt->named_rewrite_template;
+	zend_string *numbered = NULL;
+	int ret;
+
+	stmt->bound_param_map = NULL;
+	stmt->named_rewrite_template = LAKE_PARAM_HOLE_TEMPLATE;
+	ret = pdo_parse_params(stmt, S->native_sql ? S->native_sql : sql, &numbered);
+	if (stmt->bound_param_map) {
+		zend_hash_destroy(stmt->bound_param_map);
+		FREE_HASHTABLE(stmt->bound_param_map);
+	}
+	stmt->bound_param_map = names;
+	stmt->named_rewrite_template = template;
+
+	if (ret == 1) {
+		if (S->native_sql) {
+			zend_string_release_ex(S->native_sql, 0);
+		}
+		S->native_sql = numbered;
+	}
+	return ret;
+}
+
 static bool lake_handle_preparer(pdo_dbh_t *dbh, zend_string *sql, pdo_stmt_t *stmt, zval *driver_options)
 {
 	pdo_lake_db_handle *H = dbh->driver_data;
@@ -79,6 +109,10 @@ static bool lake_handle_preparer(pdo_dbh_t *dbh, zend_string *sql, pdo_stmt_t *s
 	}
 	if (ret == 1) {
 		S->native_sql = nsql;
+	}
+	if (lake_number_placeholders(stmt, S, sql) == -1) {
+		strcpy(dbh->error_code, stmt->error_code);
+		return false;
 	}
 	if (stmt->bound_param_map) {
 		/* The positions are resolved from bound_param_map at execute time, so one :name may appear several times. */

@@ -41,6 +41,9 @@ typedef struct {
 	size_t len;
 } lake_param;
 
+/* lake_conn_query() sends parameter n (from 1) under the name lake_p<n>; statements name their holes with this template. */
+#define LAKE_PARAM_HOLE_TEMPLATE ":lake_p%d"
+
 enum {
 	LAKE_CELL_NULL = 0,
 	LAKE_CELL_BOOL = 1,

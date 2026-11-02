@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Server-side parameters land where they are written. Databend numbers bare `?` in syntax-tree order, so in a multi-branch `CASE` the `WHEN` values took the first parameters and the `THEN` values the rest. Placeholders are now sent as named holes numbered in text order.
+
 ## [0.1.2] - 2026-10-23
 
 ### Fixed
