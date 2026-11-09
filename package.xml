@@ -14,9 +14,9 @@
         <email>stringke@users.noreply.github.com</email>
         <active>yes</active>
     </lead>
-    <date>2026-11-02</date>
+    <date>2026-11-09</date>
     <version>
-        <release>0.1.3</release>
+        <release>0.1.4</release>
         <api>0.1.0</api>
     </version>
     <stability>
@@ -24,7 +24,7 @@
         <api>beta</api>
     </stability>
     <license uri="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</license>
-    <notes>Server-side parameters are sent as holes numbered in text order, so values land where they are written in a multi-branch CASE. See CHANGELOG.md.</notes>
+    <notes>A result ends normally when the gateway loses the query's node on the final request, and server errors no longer carry the gateway's request dump with the session cookie. See CHANGELOG.md.</notes>
     <contents>
         <dir name="/">
             <file name="CHANGELOG.md" role="doc" />
@@ -105,6 +105,19 @@
             prompt="Directory with a prebuilt liblake_ffi.a (no to build it with cargo)" />
     </extsrcrelease>
     <changelog>
+        <release>
+            <date>2026-11-09</date>
+            <version>
+                <release>0.1.4</release>
+                <api>0.1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>beta</api>
+            </stability>
+            <license uri="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</license>
+            <notes>A result ends normally when the gateway loses the query's node on the final request, and server errors no longer carry the gateway's request dump with the session cookie.</notes>
+        </release>
         <release>
             <date>2026-11-02</date>
             <version>

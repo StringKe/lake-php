@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] - 2026-11-09
+
+### Fixed
+
+- A result no longer fails after its last row when the TiDB Cloud Lake gateway loses the node that ran the query. The client fetches the query's `/final` URI after the last page; the gateway answered it with `Sticky session state lost: node '...' not found in cluster`, which surfaced as a query error although every row had arrived. That answer on the final request now ends the result normally; the same answer on a data page is still an error.
+- Server error messages are cut before the `, request=Request {` dump the gateway appends, which carried the session cookie and internal addresses into application logs.
+
 ## [0.1.3] - 2026-11-02
 
 ### Fixed
