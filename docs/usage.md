@@ -56,6 +56,7 @@ The accepted schemes are `lake`, `lake+http`, `lake+https`, `lake+flight`, `lake
 | `Pdo\Lake::ATTR_ROLE` | yes | yes | Current role, read with `current_role()`. Setting it runs `SET ROLE`. |
 | `Pdo\Lake::ATTR_QUERY_ID` | statement | | Server query id of the statement's last execution. |
 | `Pdo\Lake::ATTR_QUERY_STATS` | statement | | Array with `total_rows`, `total_bytes`, `read_rows`, `read_bytes`, `write_rows`, `write_bytes`, `running_time_ms`, `spill_file_nums`, `spill_bytes`. |
+| `Pdo\Lake::ATTR_CLIENT_NAME` | | constructor | Client name sent with every request and recorded as the query's `user_agent` in the server's query history. Defaults to `lake-php/<version>`. Pass it in the constructor's `$options`. |
 
 `lastInsertId()` is not supported and raises `IM001`; the server has no auto-increment ids.
 
@@ -70,6 +71,7 @@ The accepted schemes are `lake`, `lake+http`, `lake+https`, `lake+flight`, `lake
 | `useDatabase(string $database): bool` | `USE` a database. An unknown database raises `3D000`. |
 | `useRole(string $role): bool` | `SET ROLE`. |
 | `setSessionSetting(string $name, string $value): bool` | `SET name = 'value'`. The name may contain letters, digits and `_` only. |
+| `setQueryTag(string $tag): bool` | Sets the `query_tag` session setting that the server records with each query in its query history. No request is made: the tag travels with the next statement and stays until changed; an empty string clears it. REST only; FlightSQL ignores it. |
 | `presign(string $operation, string $stage): array\|false` | `PRESIGN UPLOAD` or `PRESIGN DOWNLOAD`; returns `method`, `headers` and `url`. Needs storage that supports presigning (S3 compatible, not the local `fs` backend). |
 | `uploadToStage(string $stage, string $data): bool` | Writes a string to a stage path such as `@my_stage/dir/a.csv`. |
 | `uploadFileToStage(string $stage, string $filename): bool` | Same for a local file, streamed from disk. |
@@ -129,6 +131,8 @@ Server errors carry their numeric code in `errorInfo[1]` and the message in `err
 | any other | | `HY000` |
 
 Rejected credentials (and HTTP 401 / 403) are `28000`. Transport failures (connection refused, TLS, timeouts, HTTP 5xx) are `08001` while connecting and `08S01` afterwards. Other HTTP errors are `HY000` with the HTTP status as the native code. As in `pdo_mysql`, an exception thrown while connecting has the native code in `getCode()`; the SQLSTATE is in `errorInfo[0]`.
+
+An error raised once the server has assigned the query an id ends with `[query_id=<id>]`, so the failed query can be looked up in the server's query history. Errors returned while the query is being started, such as syntax errors, have no id.
 
 The TiDB Cloud Lake gateway appends the full HTTP request, session cookie included, to some error messages; the driver cuts the message before `, request=Request {`.
 

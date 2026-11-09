@@ -28,6 +28,9 @@ class Lake extends \PDO
     /** @cvalue PDO_LAKE_ATTR_QUERY_STATS */
     public const int ATTR_QUERY_STATS = UNKNOWN;
 
+    /** @cvalue PDO_LAKE_ATTR_CLIENT_NAME */
+    public const int ATTR_CLIENT_NAME = UNKNOWN;
+
     /** @cvalue LAKE_LOAD_STAGE */
     public const int LOAD_STAGE = UNKNOWN;
 
@@ -47,6 +50,8 @@ class Lake extends \PDO
     public function useRole(string $role): bool {}
 
     public function setSessionSetting(string $name, string $value): bool {}
+
+    public function setQueryTag(string $tag): bool {}
 
     public function presign(string $operation, string $stage): array|false {}
 

@@ -411,7 +411,8 @@ static int pdo_lake_handle_factory(pdo_dbh_t *dbh, zval *driver_options)
 	zend_long timeout = pdo_attr_lval(driver_options, PDO_ATTR_TIMEOUT, 0);
 	lake_str user = {dbh->username, dbh->username ? strlen(dbh->username) : 0};
 	lake_str password = {dbh->password, dbh->password ? strlen(dbh->password) : 0};
-	lake_str client_name = pdo_lake_cstr(ZEND_STRL("lake-php/" PHP_PDO_LAKE_VERSION));
+	zend_string *custom_name = pdo_attr_strval(driver_options, PDO_LAKE_ATTR_CLIENT_NAME, NULL);
+	lake_str client_name = custom_name ? pdo_lake_str(custom_name) : pdo_lake_cstr(ZEND_STRL("lake-php/" PHP_PDO_LAKE_VERSION));
 	int ok = 0;
 
 	dbh->driver_data = H;
@@ -419,6 +420,9 @@ static int pdo_lake_handle_factory(pdo_dbh_t *dbh, zval *driver_options)
 	dbh->max_escaped_char_length = 2;
 
 	H->conn = lake_connect(pdo_lake_cstr(dbh->data_source, dbh->data_source_len), user, password, timeout, client_name, &H->err);
+	if (custom_name) {
+		zend_string_release(custom_name);
+	}
 	if (!H->conn) {
 		pdo_lake_raise(dbh, NULL);
 		goto cleanup;

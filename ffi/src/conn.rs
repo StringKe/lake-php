@@ -29,6 +29,7 @@ const SET_WAREHOUSE: i32 = 0;
 const SET_DATABASE: i32 = 1;
 const SET_ROLE: i32 = 2;
 const SET_SESSION: i32 = 3;
+const SET_QUERY_TAG: i32 = 4;
 
 fn driver_error(error: lake_driver::Error) -> Failure {
     Failure::from_driver(&error, false)
@@ -210,9 +211,9 @@ fn literal(value: &str) -> String {
     format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"))
 }
 
-/// Changes the warehouse (0), database (1), role (2) or a session setting (3) used by later statements.
+/// Changes the warehouse (0), database (1), role (2), a session setting (3) or the query tag (4) used by later statements.
 /// Database, role and settings go through SQL so the server validates them and FlightSQL sessions follow too;
-/// the warehouse is a RestAPI request header with no SQL form.
+/// the warehouse is a RestAPI request header with no SQL form, and the query tag rides in the next request's session without a round trip.
 ///
 /// # Safety
 /// `key` and `value` must be null or readable.
@@ -224,6 +225,10 @@ pub unsafe extern "C" fn lake_conn_set(conn: Option<&LakeConn>, what: i32, key: 
         let sql = match what {
             SET_WAREHOUSE => {
                 conn.set_warehouse(value).map_err(driver_error)?;
+                return Ok(true);
+            }
+            SET_QUERY_TAG => {
+                conn.set_session("query_tag", value).map_err(driver_error)?;
                 return Ok(true);
             }
             SET_DATABASE => format!("USE {}", identifier(value)),

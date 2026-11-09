@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.5] - 2026-11-09
+
+### Added
+
+- `Pdo\Lake::setQueryTag()` sets the `query_tag` the server records in its query history, without a request of its own: the tag travels with the next statement.
+- `Pdo\Lake::ATTR_CLIENT_NAME` connection option replaces the default `lake-php/<version>` client name, which the server records as the query's `user_agent`.
+- Errors raised after the server assigned the query an id end with `[query_id=<id>]`.
+
 ## [0.1.4] - 2026-11-09
 
 ### Fixed

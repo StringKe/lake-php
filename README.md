@@ -38,7 +38,7 @@ foreach ($st as $row) {
 With PECL, from a release tarball:
 
 ```sh
-pecl install https://github.com/stringke/lake-php/releases/download/v0.1.4/pdo_lake-0.1.4.tgz
+pecl install https://github.com/stringke/lake-php/releases/download/v0.1.5/pdo_lake-0.1.5.tgz
 ```
 
 With [PIE](https://github.com/php/pie):

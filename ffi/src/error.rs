@@ -27,6 +27,16 @@ impl Failure {
             _ => Self::new(GENERAL, text(error)),
         }
     }
+
+    /// Ends the message with the server query id so the failure can be found in the server's query history.
+    pub fn with_query_id(mut self, query_id: Option<&str>) -> Self {
+        if let Some(id) = query_id
+            && !self.message.contains("[query_id=")
+        {
+            self.message = format!("{} [query_id={id}]", self.message);
+        }
+        self
+    }
 }
 
 /// The driver's Display appends its own version tag, which is noise in a PDO error message.
@@ -96,7 +106,7 @@ fn server_error(sqlstate: &'static str, code: u16, message: &str, detail: Option
 fn classify_api(error: &ApiError, link: &'static str) -> Option<Failure> {
     let status_failure = |sqlstate, status: u16| Failure { sqlstate, code: i64::from(status), message: text(error) };
     match error {
-        ApiError::WithContext { inner, .. } => classify_api(inner, link),
+        ApiError::WithContext { inner, query_id, .. } => classify_api(inner, link).map(|failure| failure.with_query_id(query_id.as_deref())),
         ApiError::QueryFailed(ec) | ApiError::Logic(_, ec) => Some(server_error(query_sqlstate(ec.code), ec.code, &ec.message, ec.detail.as_deref())),
         ApiError::AuthFailure(ec) => Some(server_error(AUTH_FAILED, ec.code, &ec.message, ec.detail.as_deref())),
         ApiError::Request(_) => Some(Failure::new(link, text(error))),
@@ -136,5 +146,12 @@ mod tests {
         let failure = server_error(GENERAL, 400, LOST_ON_FINAL, None);
         assert_eq!(failure.message, "Some(400) BadArguments. Code: 1006, Text = Sticky session state lost: node 'node-a' not found in cluster");
         assert_eq!(without_request_dump("1025 Unknown table"), "1025 Unknown table");
+    }
+
+    #[test]
+    fn failures_name_the_query_they_belong_to() {
+        let failure = classify_api(&ApiError::Request("connection reset".into()).with_query_id("query-1"), LINK_FAILURE).expect("request errors are classified");
+        assert_eq!(failure.message, "connection reset [query_id=query-1]");
+        assert_eq!(classify_api(&ApiError::Request("connection reset".into()), LINK_FAILURE).expect("request errors are classified").message, "connection reset");
     }
 }

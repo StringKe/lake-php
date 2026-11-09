@@ -91,6 +91,7 @@ enum {
 	LAKE_SET_DATABASE = 1,
 	LAKE_SET_ROLE = 2,
 	LAKE_SET_SESSION = 3,
+	LAKE_SET_QUERY_TAG = 4,
 };
 
 enum {

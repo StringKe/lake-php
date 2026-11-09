@@ -102,6 +102,11 @@ PHP_METHOD(Pdo_Lake, useRole)
 	lake_use(INTERNAL_FUNCTION_PARAM_PASSTHRU, LAKE_SET_ROLE);
 }
 
+PHP_METHOD(Pdo_Lake, setQueryTag)
+{
+	lake_use(INTERNAL_FUNCTION_PARAM_PASSTHRU, LAKE_SET_QUERY_TAG);
+}
+
 PHP_METHOD(Pdo_Lake, setSessionSetting)
 {
 	zend_string *name, *value;

@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a9c75ba474d0c24c0c82acb41ef4ebe74ba95def */
+ * Stub hash: 493ec2929824d841f50a5ec2190bced4b276bccd */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Pdo_Lake_lastQueryId, 0, 0, IS_STRING, 1)
 ZEND_END_ARG_INFO()
@@ -26,6 +26,10 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Pdo_Lake_setSessionSetting, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Pdo_Lake_setQueryTag, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, tag, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Pdo_Lake_presign, 0, 2, MAY_BE_ARRAY|MAY_BE_FALSE)
@@ -80,6 +84,7 @@ ZEND_METHOD(Pdo_Lake, useWarehouse);
 ZEND_METHOD(Pdo_Lake, useDatabase);
 ZEND_METHOD(Pdo_Lake, useRole);
 ZEND_METHOD(Pdo_Lake, setSessionSetting);
+ZEND_METHOD(Pdo_Lake, setQueryTag);
 ZEND_METHOD(Pdo_Lake, presign);
 ZEND_METHOD(Pdo_Lake, uploadToStage);
 ZEND_METHOD(Pdo_Lake, uploadFileToStage);
@@ -97,6 +102,7 @@ static const zend_function_entry class_Pdo_Lake_methods[] = {
 	ZEND_ME(Pdo_Lake, useDatabase, arginfo_class_Pdo_Lake_useDatabase, ZEND_ACC_PUBLIC)
 	ZEND_ME(Pdo_Lake, useRole, arginfo_class_Pdo_Lake_useRole, ZEND_ACC_PUBLIC)
 	ZEND_ME(Pdo_Lake, setSessionSetting, arginfo_class_Pdo_Lake_setSessionSetting, ZEND_ACC_PUBLIC)
+	ZEND_ME(Pdo_Lake, setQueryTag, arginfo_class_Pdo_Lake_setQueryTag, ZEND_ACC_PUBLIC)
 	ZEND_ME(Pdo_Lake, presign, arginfo_class_Pdo_Lake_presign, ZEND_ACC_PUBLIC)
 	ZEND_ME(Pdo_Lake, uploadToStage, arginfo_class_Pdo_Lake_uploadToStage, ZEND_ACC_PUBLIC)
 	ZEND_ME(Pdo_Lake, uploadFileToStage, arginfo_class_Pdo_Lake_uploadFileToStage, ZEND_ACC_PUBLIC)
@@ -150,6 +156,12 @@ static zend_class_entry *register_class_Pdo_Lake(zend_class_entry *class_entry_P
 	zend_string *const_ATTR_QUERY_STATS_name = zend_string_init_interned("ATTR_QUERY_STATS", sizeof("ATTR_QUERY_STATS") - 1, 1);
 	zend_declare_typed_class_constant(class_entry, const_ATTR_QUERY_STATS_name, &const_ATTR_QUERY_STATS_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(const_ATTR_QUERY_STATS_name);
+
+	zval const_ATTR_CLIENT_NAME_value;
+	ZVAL_LONG(&const_ATTR_CLIENT_NAME_value, PDO_LAKE_ATTR_CLIENT_NAME);
+	zend_string *const_ATTR_CLIENT_NAME_name = zend_string_init_interned("ATTR_CLIENT_NAME", sizeof("ATTR_CLIENT_NAME") - 1, 1);
+	zend_declare_typed_class_constant(class_entry, const_ATTR_CLIENT_NAME_name, &const_ATTR_CLIENT_NAME_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(const_ATTR_CLIENT_NAME_name);
 
 	zval const_LOAD_STAGE_value;
 	ZVAL_LONG(&const_LOAD_STAGE_value, LAKE_LOAD_STAGE);

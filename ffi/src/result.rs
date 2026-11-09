@@ -42,7 +42,7 @@ impl LakeResult {
                     if is_lost_after_last_page(&e) {
                         return Ok(false);
                     }
-                    return Err(Failure::from_driver(&e, false));
+                    return Err(Failure::from_driver(&e, false).with_query_id(self.query_id.as_deref()));
                 }
                 Some(Ok(RowWithStats::Stats(stats))) => self.stats = stats,
                 Some(Ok(RowWithStats::Row(row))) => {

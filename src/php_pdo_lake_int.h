@@ -23,6 +23,7 @@ enum {
 	PDO_LAKE_ATTR_SERVER_SIDE_PARAMS,
 	PDO_LAKE_ATTR_QUERY_ID,
 	PDO_LAKE_ATTR_QUERY_STATS,
+	PDO_LAKE_ATTR_CLIENT_NAME,
 };
 
 extern const pdo_driver_t pdo_lake_driver;
