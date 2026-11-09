@@ -5,7 +5,7 @@ use tokio_stream::StreamExt;
 
 use crate::abi::{LakeError, LakeStr, guard, quietly, runtime};
 use crate::cell::{CELL_INT, Cell, Column, column, to_cell};
-use crate::error::Failure;
+use crate::error::{Failure, is_lost_after_last_page};
 
 pub struct LakeResult {
     iter: Option<RowStatsIterator>,
@@ -39,6 +39,9 @@ impl LakeResult {
                 }
                 Some(Err(e)) => {
                     self.finish();
+                    if is_lost_after_last_page(&e) {
+                        return Ok(false);
+                    }
                     return Err(Failure::from_driver(&e, false));
                 }
                 Some(Ok(RowWithStats::Stats(stats))) => self.stats = stats,

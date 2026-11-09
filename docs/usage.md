@@ -130,6 +130,10 @@ Server errors carry their numeric code in `errorInfo[1]` and the message in `err
 
 Rejected credentials (and HTTP 401 / 403) are `28000`. Transport failures (connection refused, TLS, timeouts, HTTP 5xx) are `08001` while connecting and `08S01` afterwards. Other HTTP errors are `HY000` with the HTTP status as the native code. As in `pdo_mysql`, an exception thrown while connecting has the native code in `getCode()`; the SQLSTATE is in `errorInfo[0]`.
 
+The TiDB Cloud Lake gateway appends the full HTTP request, session cookie included, to some error messages; the driver cuts the message before `, request=Request {`.
+
+After the last page the driver fetches the query's `/final` URI. When the gateway answers that request with `Sticky session state lost` because the node that ran the query left the cluster, every row has already been delivered, so the result ends normally instead of failing.
+
 All three error modes work: `ERRMODE_EXCEPTION` (the PHP 8 default), `ERRMODE_WARNING` and `ERRMODE_SILENT`.
 
 ## Transactions
