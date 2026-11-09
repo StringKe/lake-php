@@ -111,7 +111,7 @@ fn classify_api(error: &ApiError, link: &'static str) -> Option<Failure> {
 mod tests {
     use super::*;
 
-    const LOST_ON_FINAL: &str = r#"Some(400) BadArguments. Code: 1006, Text = Sticky session state lost: node 'zlo1JshXNoSa2p0b43idU1' not found in cluster, request=Request { method: GET, uri: /query/01a1b4f56f00771aa494f3121531c051/final, version: HTTP/1.1, headers: {"cookie": "session_id=01a1b4f5-5b85-73d3-80e6-52269948d0cd", "x-databend-sticky-node": "zlo1JshXNoSa2p0b43idU1"} }"#;
+    const LOST_ON_FINAL: &str = r#"Some(400) BadArguments. Code: 1006, Text = Sticky session state lost: node 'node-a' not found in cluster, request=Request { method: GET, uri: /query/query-1/final, version: HTTP/1.1, headers: {"cookie": "session_id=session-1", "x-databend-sticky-node": "node-a"} }"#;
 
     #[test]
     fn sticky_node_lost_on_the_final_request_ends_the_result() {
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn request_dump_is_cut_from_server_messages() {
         let failure = server_error(GENERAL, 400, LOST_ON_FINAL, None);
-        assert_eq!(failure.message, "Some(400) BadArguments. Code: 1006, Text = Sticky session state lost: node 'zlo1JshXNoSa2p0b43idU1' not found in cluster");
+        assert_eq!(failure.message, "Some(400) BadArguments. Code: 1006, Text = Sticky session state lost: node 'node-a' not found in cluster");
         assert_eq!(without_request_dump("1025 Unknown table"), "1025 Unknown table");
     }
 }
